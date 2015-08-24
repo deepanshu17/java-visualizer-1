@@ -6,9 +6,10 @@
 Sandhya Kode, Bhavana Gannu, Deepanshu Jain, Susobhan Ghosh, Vanjape Rajas Mangesh
 
 ## Agenda
-Agenda of the meeting
+To understand the overview of the given project
 
-## Minutes
+## Minutes - 60
+
 ### Discussion
 *(whatever the clients has explained, what all doubts students asked, and solutions proposed.)*
 * Point
