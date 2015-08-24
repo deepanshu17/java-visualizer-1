@@ -1,6 +1,6 @@
 ## Date and time
 12 August, 2015
-<br/>12:00 PM - 1:00 PM
+12:00 PM - 1:00 PM
 
 ## Attendees
 - Sandhya Kode (Mentor)
