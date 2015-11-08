@@ -1,10 +1,10 @@
 <?php
-	$target_dir = "upload/";
-	$servercode = $_POST["usercode"];
+    $target_dir = "upload/";
+    $filebase = md5(time()).".java";
+    $target_file = $target_dir.basename($filebase);
+    $txt = $_POST["codeToUpload"];
+    $myfile = fopen($target_file, "w");
+    fwrite($myfile, $txt);
+    fclose($myfile);
+    echo $filebase;
 ?>
-
-var code = YOUR_CODE;
-$.post(SERVER,{code_in_the_server:code},function(data){
-if(data) console.log("success!");
-else console.log("fuck up");
-}

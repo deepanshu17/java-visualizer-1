@@ -92,44 +92,48 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 <script type="text/javascript">
 function saveTextAsFile()
 {      
-// grab the content of the form field and place it into a variable
     var textToWrite = pyInputCodeMirror.getValue();
-//  create a new Blob (html5 magic) that conatins the data from your form feild
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-// Specify the name of the file to be saved
     var fileNameToSaveAs = "code.java";
-    console.log(textToWrite);
-    
-// Optionally allow the user to choose a file name by providing 
-// an imput field in the HTML and using the collected data here
-// var fileNameToSaveAs = txtFileName.text;
-
-// create a link for our script to 'click'
     var downloadLink = document.createElement("a");
-//  supply the name of the file (from the var above).
-// you could create the name here but using a var
-// allows more flexability later.
     downloadLink.download = fileNameToSaveAs;
-// provide text for the link. This will be hidden so you
-// can actually use anything you want.
     downloadLink.innerHTML = "My Hidden Link";
-    
-// allow our code to work in webkit & Gecko based browsers
-// without the need for a if / else block.
     window.URL = window.URL || window.webkitURL;
           
-// Create the link Object.
     downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-// when link is clicked call a function to remove it from
-// the DOM in case user wants to save a second file.
     downloadLink.onclick = destroyClickedElement;
-// make sure the link is hidden.
     downloadLink.style.display = "none";
-// add the link to the DOM
     document.body.appendChild(downloadLink);
-    
-// click the new link
     downloadLink.click();
+}
+
+function saveTextasJNLP()
+{
+  var code = pyInputCodeMirror.getValue();
+  console.log(code);
+
+  $.ajax({
+    url:"upload.php",
+    type: "post",
+    data: "codeToUpload="+code,
+    success:function(res){
+      var codebase = window.location.href;
+      var filebase = codebase+"upload/"+res+"?forcedownload=1";
+      var textToWrite = '<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n\n<jnlp spec="1.0+" codebase="'+codebase+'" href="">\n<information>\n<title>Jeliot 3</title>\n<vendor>University of Joensuu</vendor>\n<description>Jeliot 3, the program animation tool</description>\n<offline-allowed/>\n</information>\n<security>\n<all-permissions/>\n</security>\n<resources>\n<j2se version="1.4+"/>\n<jar href="jeliot.jar"/>\n</resources>\n<application-desc main-class="jeliot.MoodleJeliot">\n\n<argument>'+filebase+'</argument>\n<argument>sessionID</argument>\n<argument>userID</argument>\n<argument>0</argument>\n\n</application-desc>\n</jnlp>'
+        var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
+      var fileNameToSaveAs = "WebStartJeliot.jnlp";
+      var downloadLink = document.createElement("a");
+      downloadLink.download = fileNameToSaveAs;
+      downloadLink.innerHTML = "My Hidden Link";
+      window.URL = window.URL || window.webkitURL;
+            
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+    }
+  });
 }
 
 function destroyClickedElement(event)
@@ -263,19 +267,41 @@ topics = [
 </script>
 
 <style>
-
 @import url(https://fonts.googleapis.com/css?family=Slabo+27px);
 body,html{
-  background: #232c31;
-  color: white;
+  background: #242D32;
+  color: #CCEBFF;
   margin: 0;
   padding: 0;
+  padding-bottom: 50px;
   font-family: 'Slabo 27px', serif;
   line-height: 1.1rem;
   letter-spacing: 0.5px;
+  position: relative;
+}
+#stackHeapTable{
+  color: teal;
+}
+#stackHeader, #heapHeader{
+  color: #CCEBFF !important;
+}
+div.ExecutionVisualizer .highlight-cur {
+    background-color: #2F709A;
+}
+div.ExecutionVisualizer .highlight-prev {
+    background-color: #F44336;
+  color: white;
+  font-weight: bold;
+}
+div.ExecutionVisualizer .highlight-legend {
+    color: #fff;
+}
+.CodeMirror .errorLine{
+  background-color: #D23434 !important;
+  outline: 1px dashed red !important;
 }
 body > table{
-  background: #152b39;
+  background: #152B39;
   width: 100%;
   border-style: solid;
   border-width: 1px;
@@ -294,7 +320,7 @@ a{
 
 }
 tt,code,code a{
-  color: #009936 !important;
+  color: #CCEBFF !important;
   font-family: 'Slabo 27px', serif;
   display: inline-block;
   transition: all .3s;
@@ -305,15 +331,18 @@ tt,code{
   font-weight: bold;
 }
 tt:hover,code:hover,code:hover a{
-  background: #089be6;
-  color: #FFF !important;
+  background: #FFD900;
+  color: #152B39 !important;
 }
 button{
   border-radius: 2px;
   border: none;
-  background: #FFEF1F;
+  background: #FFD900;
   font-family: 'Slabo 27px', serif;
   cursor: pointer;
+}
+#pyInputPane p:first-child{
+  font-size: 1.1rem;
 }
 #pyInputPane table tbody tr td{
   padding-left: 0;
@@ -325,7 +354,6 @@ button{
   min-height: 20px;
   text-transform: uppercase;
 }
-
 #options{
   display: inline-block;
 }
@@ -338,17 +366,23 @@ button{
 #options span input:checked + label{
   font-weight: bold;
 }
-p{
-  color: #FF00DC;
+#footer{
+  background: #152B39;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  position: fixed;
+  bottom: 0px;
+  z-index: 999;
 }
-p:last-child a{
+#footer p{
+  margin: auto;
+  max-width: 700px;
+  padding-bottom: 20px;
+  color: #CCEBFF;
+}
+#footer p:last-child a{
   color: #FFEF1F !important;
-}
-div.ExecutionVisualizer table#pyCodeOutput .highlight-cur {
-  color:black;
-}
-div.ExecutionVisualizer table#pyCodeOutput .highlight-prev {
-  color:black;
 }
 </style>
 
@@ -361,16 +395,16 @@ div.ExecutionVisualizer table#pyCodeOutput .highlight-prev {
 <p style="text-align:center"> -->
 <button id="executeBtn" class="bigBtn" type="button">Visualize Execution</button>
 
-<button id="jeliotBtn" class="bigBtn" type="button">Start in Jeliot</button>
+<button onclick="saveTextasJNLP()" id="jeliotBtn" class="bigBtn" type="button">Start in Jeliot</button>
 </p>
 
 
-<p style="margin-top: 25px;" id="examplesHolder">
+<!-- <p style="margin-top: 25px;" id="examplesHolder"> -->
 
 <!--
 
 <br/>
-<! -- <a id="sumCubesLink" href="#">sum cubes</a> | -- >
+ <a id="sumCubesLink" href="#">sum cubes</a> | -- >
 <a id="mapExampleLink" href="#">list map</a> |
 <a id="sumExampleLink" href="#">summation</a> |
 <a id="lambdaParamLink" href="#">lambda param</a> |
@@ -422,7 +456,7 @@ div.ExecutionVisualizer table#pyCodeOutput .highlight-prev {
 <a id="nonlocalLink" href="#">nonlocal</a>
 </p>
 -->
-<div>The visualizer supports 
+<!-- <div>The visualizer supports 
 <code><a href="http://introcs.cs.princeton.edu/java/stdlib/javadoc/StdIn.html">StdIn</a></code>, 
 <code><a href="http://introcs.cs.princeton.edu/java/stdlib/javadoc/StdOut.html">StdOut</a></code>, 
 most other <a href="http://introcs.cs.princeton.edu/java/stdlib"><tt>stdlib</tt> libraries</a>,
@@ -432,7 +466,7 @@ and <a href="http://introcs.cs.princeton.edu/java/44st/ST.java.html"><tt>ST</tt>
 <br>
 <div class='toggler'>
 <a style='text-decoration:none' href='#'>Click for FAQ.</a>
-</div>
+</div> -->
 <div id='faq' style='display:none'>
 <ul>
 <li><i>How can I access Java's built-in <tt>Stack</tt>/<tt>Queue</tt> instead of the introcs one?</i> At the top of your program, write <tt>import java.util.Stack;</tt> &mdash; note, <tt>import java.util.*;</tt> won't work.
@@ -451,7 +485,7 @@ in general, this is a feature that still <a href="TODO">needs to be implemented<
 
 <div id="footer">
 
-<p>
+<!-- <p>
   <button id="genUrlBtn" class="smallBtn" type="button">Generate URL</button> <input type="text" id="urlOutput" size="70"/>
 </p>
 
@@ -459,7 +493,7 @@ in general, this is a feature that still <a href="TODO">needs to be implemented<
 and share that URL. To report a bug, paste the URL along with a brief
 error description in an email addressed to daveagp@gmail.com</p>
 
-<div id="iframeURL-div" style="display: none;">Embeddable iframe:<input type="text" id="iframeURL" size="70" style="font-family:monospace"/></div>
+<div id="iframeURL-div" style="display: none;">Embeddable iframe:<input type="text" id="iframeURL" size="70" style="font-family:monospace"/></div> -->
 
 <!--
 <div id="embedLinkDiv">
