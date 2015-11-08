@@ -148,8 +148,13 @@ function destroyClickedElement(event)
 
 <table style="margin:0px auto 0px auto;">
   <tr>
+  <!-- <td>
+    <img title="Based on icons by Jacob Halton and Francesco Terzini of the Noun Project" src="img/jv64.png">
+  </td> -->
   <td style="text-align: center">
-    <a href="#" style="text-decoration:none;" /><span style="font-size:150%">Online Java Visualizer</span>
+    <span style="font-size:150%">Online Java Visualizer</span>
+    <!-- <br><i>(beta:</i> 
+    <a href="mailto:daveagp@gmail.com">report a bug</a>) -->
   </td>
 </table>
 
@@ -266,20 +271,40 @@ topics = [
 
 @import url(https://fonts.googleapis.com/css?family=Slabo+27px);
 body,html{
-  background: #232c31;
-  color: white;
+  background: #242D32;
+  color: #CCEBFF;
   margin: 0;
   padding: 0;
+  padding-bottom: 50px;
   font-family: 'Slabo 27px', serif;
   line-height: 1.1rem;
   letter-spacing: 0.5px;
+  position: relative;
+}
+#stackHeapTable{
+  color: teal;
+}
+#stackHeader, #heapHeader{
+  color: #CCEBFF !important;
+}
+div.ExecutionVisualizer .highlight-cur {
+    background-color: #2F709A;
+}
+div.ExecutionVisualizer .highlight-prev {
+    background-color: #F44336;
+  color: white;
+  font-weight: bold;
+}
+div.ExecutionVisualizer .highlight-legend {
+    color: #fff;
+}
+.CodeMirror .errorLine{
+  background-color: #D23434 !important;
+  outline: 1px dashed red !important;
 }
 body > table{
-  background: #152b39;
+  background: #152B39;
   width: 100%;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #1a2125;
 }
 body > table tr > td{
   padding: 10px;
@@ -294,7 +319,7 @@ a{
 
 }
 tt,code,code a{
-  color: #009936 !important;
+  color: #CCEBFF !important;
   font-family: 'Slabo 27px', serif;
   display: inline-block;
   transition: all .3s;
@@ -305,15 +330,18 @@ tt,code{
   font-weight: bold;
 }
 tt:hover,code:hover,code:hover a{
-  background: #089be6;
-  color: #FFF !important;
+  background: #FFD900;
+  color: #152B39 !important;
 }
 button{
   border-radius: 2px;
   border: none;
-  background: #FFEF1F;
+  background: #FFD900;
   font-family: 'Slabo 27px', serif;
   cursor: pointer;
+}
+#pyInputPane p:first-child{
+  font-size: 1.1rem;
 }
 #pyInputPane table tbody tr td{
   padding-left: 0;
@@ -325,7 +353,6 @@ button{
   min-height: 20px;
   text-transform: uppercase;
 }
-
 #options{
   display: inline-block;
 }
@@ -338,21 +365,59 @@ button{
 #options span input:checked + label{
   font-weight: bold;
 }
-p{
-  color: #FF00DC;
+#footer{
+  background: #152B39;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  position: fixed;
+  bottom: 0px;
+  z-index: 999;
 }
-p:last-child a{
+#footer p{
+  margin: auto;
+  max-width: 700px;
+  padding-bottom: 20px;
+  color: #CCEBFF;
+}
+#footer p:last-child a{
   color: #FFEF1F !important;
-}
-div.ExecutionVisualizer table#pyCodeOutput .highlight-cur {
-  color:black;
-}
-div.ExecutionVisualizer table#pyCodeOutput .highlight-prev {
-  color:black;
 }
 </style>
 
-
+<!--
+<p style="margin-top: 10px; line-height: 200%;">
+Execute code using
+  <select id="pythonVersionSelector">
+    <option value="2">Python 2.7</option>
+    <option value="3">Python 3.3</option>
+  </select>,
+-->
+<!-- these two make sense, but are not implemented yet
+  <select id="cumulativeModeSelector">
+    <option value="false">hide frames of exited functions</option>
+    <option value="true">show frames of exited functions</option>
+  </select>,
+  <select id="heapPrimitivesSelector">
+    <option value="false">inline primitives and nested objects</option>
+    <option value="true">render all objects on the heap</option>
+  </select>,
+-->
+<!--
+  <select id="drawParentPointerSelector">
+    <option value="false">hide environment parent pointers</option>
+    <option value="true">show environment parent pointers</option>
+  </select>,
+  <select id="textualMemoryLabelsSelector">
+    <option value="false">draw references using arrows</option>
+    <option value="true">use text labels for references</option>
+  </select>, and
+  <select id="showOnlyOutputsSelector">
+    <option value="false">show everything</option>
+    <option value="true">show only outputs</option>
+  </select>.
+</p>
+-->
 
 <p style="text-align:center">
   <button onclick="saveTextAsFile()" id="saveBtn" class="bigBtn" type="button">Save Code</button>
@@ -360,15 +425,37 @@ div.ExecutionVisualizer table#pyCodeOutput .highlight-prev {
 
 <p style="text-align:center"> -->
 <button id="executeBtn" class="bigBtn" type="button">Visualize Execution</button>
-
-<button id="jeliotBtn" class="bigBtn" type="button">Start in Jeliot</button>
 </p>
 
 
-<p style="margin-top: 25px;" id="examplesHolder">
+<!-- <p style="margin-top: 25px;" id="examplesHolder"> -->
 
 <!--
+<a id="aliasExampleLink" href="#">hello</a> |
+<a id="happyExampleLink" href="#">happy</a> |
+<a id="tutorialExampleLink" href="#">intro</a> |
+<a id="filterExampleLink" href="#">filter</a> |
+<a id="strtokExampleLink" href="#">tokenize</a> |
+<a id="insSortExampleLink" href="#">insertion sort</a> |
+<a id="listCompLink" href="#">list comprehension</a>
+</p>
 
+<p style="margin-top: 15px;">Math-Related Fun:<br/>
+<a id="factExampleLink" href="#">factorial</a> |
+<a id="fibonacciExampleLink" href="#">fibonacci</a> |
+<a id="memoFibExampleLink" href="#">memoized fibonacci</a> |
+<a id="newtonExampleLink" href="#">square root</a> |
+<a id="pwGcdLink" href="#">gcd</a> |
+<a id="towersOfHanoiLink" href="#">towers of hanoi</a>
+</p>
+
+<p style="margin-top: 15px;">Higher-Order Functions:<br/>
+
+<a id="closure1Link" href="#">closure 1</a> |
+<a id="closure2Link" href="#">closure 2</a> |
+<a id="closure3Link" href="#">closure 3</a> |
+<a id="closure4Link" href="#">closure 4</a> |
+<a id="closure5Link" href="#">closure 5</a>
 <br/>
 <! -- <a id="sumCubesLink" href="#">sum cubes</a> | -- >
 <a id="mapExampleLink" href="#">list map</a> |
@@ -422,7 +509,7 @@ div.ExecutionVisualizer table#pyCodeOutput .highlight-prev {
 <a id="nonlocalLink" href="#">nonlocal</a>
 </p>
 -->
-<div>The visualizer supports 
+<!-- <div>The visualizer supports 
 <code><a href="http://introcs.cs.princeton.edu/java/stdlib/javadoc/StdIn.html">StdIn</a></code>, 
 <code><a href="http://introcs.cs.princeton.edu/java/stdlib/javadoc/StdOut.html">StdOut</a></code>, 
 most other <a href="http://introcs.cs.princeton.edu/java/stdlib"><tt>stdlib</tt> libraries</a>,
@@ -432,7 +519,7 @@ and <a href="http://introcs.cs.princeton.edu/java/44st/ST.java.html"><tt>ST</tt>
 <br>
 <div class='toggler'>
 <a style='text-decoration:none' href='#'>Click for FAQ.</a>
-</div>
+</div> -->
 <div id='faq' style='display:none'>
 <ul>
 <li><i>How can I access Java's built-in <tt>Stack</tt>/<tt>Queue</tt> instead of the introcs one?</i> At the top of your program, write <tt>import java.util.Stack;</tt> &mdash; note, <tt>import java.util.*;</tt> won't work.
@@ -451,15 +538,15 @@ in general, this is a feature that still <a href="TODO">needs to be implemented<
 
 <div id="footer">
 
-<p>
+<!-- <p>
   <button id="genUrlBtn" class="smallBtn" type="button">Generate URL</button> <input type="text" id="urlOutput" size="70"/>
 </p>
 
 <p>To share this visualization, click the 'Generate URL' button above
 and share that URL. To report a bug, paste the URL along with a brief
-error description in an email addressed to daveagp@gmail.com</p>
+error description in an email addressed to daveagp@gmail.com</p> -->
 
-<div id="iframeURL-div" style="display: none;">Embeddable iframe:<input type="text" id="iframeURL" size="70" style="font-family:monospace"/></div>
+<!-- <div id="iframeURL-div" style="display: none;">Embeddable iframe:<input type="text" id="iframeURL" size="70" style="font-family:monospace"/></div> -->
 
 <!--
 <div id="embedLinkDiv">

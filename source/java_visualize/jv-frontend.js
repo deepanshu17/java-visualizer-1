@@ -124,14 +124,16 @@ function getUserStdin() {
 
 $(document).ready(function() {
 
-  $("#embedLinkDiv").hide();
+  //$("#embedLinkDiv").hide();
 
   pyInputCodeMirror = CodeMirror(document.getElementById('codeInputPane'), {
     mode: 'text/x-java',
+    keyMap: "sublime",
     lineNumbers: true,
-      matchBrackets: true,
+    matchBrackets: true,
     tabSize: 3,
     indentUnit: 3,
+    theme: "monokai",
     extraKeys: {
       Tab: function(cm) {
         var lo = cm.getCursor("start").line;
@@ -453,9 +455,14 @@ $(document).ready(function() {
     }
   });
 
+
+
+
   $('#genUrlBtn').bind('click', function() {
+    // console.log(pyInputCodeMirror.getValue());
+    // console.log(appMode);
     var myArgs = {code: pyInputCodeMirror.getValue(),
-                  mode: appMode                  
+                  mode: appMode                 
                   /*
                   , cumulative: $('#cumulativeModeSelector').val(),
                   heapPrimitives: $('#heapPrimitivesSelector').val(),
