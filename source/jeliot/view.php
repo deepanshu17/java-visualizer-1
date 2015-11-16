@@ -88,12 +88,12 @@
         echo "<pre>".$code."</pre>";
         $baseurl = "http://localhost/java_visualize/#mode=display&curInstr=0&code=";
         $baseurl = $baseurl.urlencode($code);
-        echo "<a title='Visualize Online!' target='_blank' href='".$baseurl."'>Visualize Online!</a>";
+        echo "<a title='Visualize Online!' target='_blank' href='".$baseurl."'><button>Visualize Online!</button></a>";
         
     ?>
 	 <a title="Start Jeliot!" href="<?php echo jeliot_create_JNLP_link($course, $jeliot);?>">
          <!-- <img src="logo3d32.png" title="Start Jeliot 3" height="32" width="32" alt="Jeliot 3 logo"/> -->
-         <br/> Visualize in Jeliot</a><br/>  
+         <br/><button> Visualize in Jeliot</button></a><br/>  
 
 
     </div>
