@@ -64,12 +64,39 @@
     }
 
     $linkCSS = "<link rel=\"stylesheet\" type=\"text/css\" href=\"jeliot.css\" />";
-    //print_header("$course->shortname: $jeliot->name", "$course->fullname",
+    $linkCSS = "<link rel=\"stylesheet\" type=\"text/css\" 
+        href=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css\">";
+
+    // print_header("$course->shortname: $jeliot->name", "$course->fullname",
     //             "$navigation <a href=index.php?id=$course->id>$strjeliots</a> -> $jeliot->name",
     //              "", $linkCSS, true, update_module_button($cm->id, $course->id, $strjeliot),
     //              navmenu($course, $cm));
+    // $csslink = '/mod/jeliot/'
+    // $PAGE->requires->css($csslink, true);
     echo $OUTPUT->header();
 	echo $OUTPUT->heading($jeliot->name);
+    echo '<style> 
+            @import url("http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css");                                                                                                                                                        
+            div#jeliot_link{
+                // border : 3px solid red;
+            }
+            div#jeliot_description p{
+                text-align:left;
+            }
+            div#jeliot_sourceCode{
+                font-size:0.9em;   
+            } 
+            .btn{
+                padding: 6px;
+                border-radius: 0;
+                background: yellow;
+                text-decoration:none;
+                text-color:red;
+            }
+            .btn-default{
+                color:red;
+            }
+        </style>'
 
 /// Print the main part of the page
 ?>  
@@ -82,21 +109,24 @@
     <div id="jeliot_link">  
 	<!--<?php echo $course->id."**".$jeliot->sourcefile;?>-->
 	
-   
     <?php 
         $code = jeliot_return_sourcefile($course, $jeliot);
         echo "<pre>".$code."</pre>";
         $baseurl = "http://localhost/java_visualize/#mode=display&curInstr=0&code=";
         $baseurl = $baseurl.urlencode($code);
-        echo "<a title='Visualize Online!' target='_blank' href='".$baseurl."'><button>Visualize Online!</button></a>";
-        
+
+        echo '<button type="button" class="btn btn-default btn-lg active"> 
+        <a title="Visualize Online!" target="_blank" 
+                    href="'.$baseurl.'">Visualize Online! </a>  </button>';
+   
     ?>
+
+    <button type="button" class="btn btn-default">
 	 <a title="Start Jeliot!" href="<?php echo jeliot_create_JNLP_link($course, $jeliot);?>">
          <!-- <img src="logo3d32.png" title="Start Jeliot 3" height="32" width="32" alt="Jeliot 3 logo"/> -->
-         <br/><button> Visualize in Jeliot</button></a><br/>  
+         Visualize in Jeliot</a>
+    </button>
 
-
-    </div>
 <?php
 /// Finish the page
     print_footer($course);

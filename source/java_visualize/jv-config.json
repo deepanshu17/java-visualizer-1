@@ -1,7 +1,7 @@
 {"remark1" : "edit the 2 paths below to run anything",
 
- "safeexec-executable-abspath": "/home/susobhan/project/safeexec/safeexec", 
- "java_jail-abspath": "/home/susobhan/project/java_jail/",
+ "safeexec-executable-abspath": "/home/deepanshu/project/safeexec/safeexec", 
+ "java_jail-abspath": "/home/deepanshu/project/java_jail/",
 
  "remark2" : [
         "optinally, edit these to log the submissions",
@@ -23,16 +23,16 @@
 
  "remark3" : "optionally, edit these performance parameters",
 
- "ajax_timeout_millis": 30000,
+ "ajax_timeout_millis": 50000,
 
- "safeexec_wallclock_s": 15,
- "safeexec_cpu_s": 10,
+ "safeexec_wallclock_s": 50,
+ "safeexec_cpu_s": 30,
  "safeexec_mem_k": 4000000,
 
  "visualizer_args": {
    "MAX_STEPS": 512,
-   "MAX_STACK_SIZE": 16,
-   "MAX_WALLTIME_SECONDS": 5,
+   "MAX_STACK_SIZE": 32,
+   "MAX_WALLTIME_SECONDS": 30,
    "remark": "time above starts before compiling"
  },
 
