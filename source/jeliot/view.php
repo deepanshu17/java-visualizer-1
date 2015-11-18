@@ -67,43 +67,54 @@
     $linkCSS = "<link rel=\"stylesheet\" type=\"text/css\" 
         href=\"http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css\">";
 
-    // print_header("$course->shortname: $jeliot->name", "$course->fullname",
-    //             "$navigation <a href=index.php?id=$course->id>$strjeliots</a> -> $jeliot->name",
-    //              "", $linkCSS, true, update_module_button($cm->id, $course->id, $strjeliot),
-    //              navmenu($course, $cm));
-    // $csslink = '/mod/jeliot/'
-    // $PAGE->requires->css($csslink, true);
     echo $OUTPUT->header();
-	echo $OUTPUT->heading($jeliot->name);
+	echo '<center>'.$OUTPUT->heading($jeliot->name).'</center>';
     echo '<style> 
-            @import url("http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css");                                                                                                                                                        
-            div#jeliot_link{
-                // border : 3px solid red;
-            }
-            div#jeliot_description p{
-                text-align:left;
-            }
-            div#jeliot_sourceCode{
-                font-size:0.9em;   
-            } 
-            .btn{
-                padding: 6px;
-                border-radius: 0;
-                background: yellow;
-                text-decoration:none;
-                text-color:red;
-            }
-            .btn-default{
-                color:red;
-            }
-        </style>'
+            	@import url("http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css");            
+	    	@import url(https://fonts.googleapis.com/css?family=Slabo+27px);
 
+		div#jeliot_link{
+		        //border : 3px solid red;
+			margin: 0 auto;
+			left: 20%;
+			width: 900px;
+            	}
+		div#jeliot_description p{
+			text-align:left;
+		}
+		div#jeliot_sourceCode{
+		        font-size:0.9em;   
+		} 
+		.btn{
+		        padding: 6px;
+		        border-radius: 0;
+		        background: yellow;
+		        text-decoration:none;
+		        text-color:red;
+		}
+		.btn-default{
+		        color:red;
+		}
+		pre {
+			width: 900px;                          /* specify width  */
+			white-space: pre-wrap;                 /* CSS3 browsers  */
+			white-space: -moz-pre-wrap !important; /* 1999+ Mozilla  */
+			white-space: -pre-wrap;                /* Opera 4 thru 6 */
+			white-space: -o-pre-wrap;              /* Opera 7 and up */
+			word-wrap: break-word;                 /* IE 5.5+ and up */
+			/* overflow-x: auto; */                /* Firefox 2 only */
+			/* width: 99%; */		       /* only if needed */
+		}
+
+        </style>';
+    echo '<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>';
+    
 /// Print the main part of the page
 ?>  
 
     <div id="jeliot_description">
       <p>
-        <?php echo $jeliot->intro; ?>
+        <center><?php echo $jeliot->intro; ?></center>
       </p>
     </div>
     <div id="jeliot_link">  
@@ -111,21 +122,16 @@
 	
     <?php 
         $code = jeliot_return_sourcefile($course, $jeliot);
-        echo "<pre>".$code."</pre>";
+        echo "<pre class='prettyprint'>".$code."</pre>";
         $baseurl = "http://localhost/java_visualize/#mode=display&curInstr=0&code=";
         $baseurl = $baseurl.urlencode($code);
 
-        echo '<button type="button" class="btn btn-default btn-lg active"> 
-        <a title="Visualize Online!" target="_blank" 
-                    href="'.$baseurl.'">Visualize Online! </a>  </button>';
+        echo '<center><a title="Visualize Online" target="_blank" 
+                    href="'.$baseurl.'"><button>Visualize Online!</button></a>';
    
     ?>
-
-    <button type="button" class="btn btn-default">
 	 <a title="Start Jeliot!" href="<?php echo jeliot_create_JNLP_link($course, $jeliot);?>">
-         <!-- <img src="logo3d32.png" title="Start Jeliot 3" height="32" width="32" alt="Jeliot 3 logo"/> -->
-         Visualize in Jeliot</a>
-    </button>
+         <button>Visualize in Jeliot</button></a></center>
 
 <?php
 /// Finish the page
