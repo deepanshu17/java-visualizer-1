@@ -80,7 +80,6 @@
 			width: 900px;
             	}
 		div#jeliot_description p{
-			text-align:left;
 		}
 		div#jeliot_sourceCode{
 		        font-size:0.9em;   
