@@ -105,6 +105,7 @@
 			/* overflow-x: auto; */                /* Firefox 2 only */
 			/* width: 99%; */		       /* only if needed */
 		}
+		.prettyprint ol.linenums > li { list-style-type: decimal; }
 
         </style>';
     echo '<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>';
@@ -122,7 +123,7 @@
 	
     <?php 
         $code = jeliot_return_sourcefile($course, $jeliot);
-        echo "<pre class='prettyprint'>".$code."</pre>";
+        echo "<pre class='prettyprint linenums'>".$code."</pre>";
         $baseurl = "http://localhost/java_visualize/#mode=display&curInstr=0&code=";
         $baseurl = $baseurl.urlencode($code);
 
