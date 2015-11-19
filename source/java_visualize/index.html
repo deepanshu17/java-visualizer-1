@@ -133,12 +133,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     }
 
     function saveTextasJNLP() {
-        var code = pyInputCodeMirror.getValue();
-        console.log(code);
+        var code = encodeURIComponent(pyInputCodeMirror.getValue());
         $.ajax({
             url: "upload.php",
             type: "post",
-            data: "codeToUpload=" + encodeURIcomponent(code),
+            data: "codeToUpload=" + code,
             success: function(res) {
                 var codebase = 'http://' + window.location.hostname + window.location.pathname;
                 var filebase = codebase + "upload/" + res + "?forcedownload=1";
