@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html>
+<!--
+
+This file, java_visualize/index.html, is based on
+visualize.html from the Online Python Tutor.
+Changes made by David Pritchard (daveagp@gmail.com);
+see README for more details.
+
+Summary of changes made:
+- different file locations
+- uses Java, not Python
+- uses CodeMirror latest version
+- lazier approach for loading examples
+
+==== Header from visualize.html ====
+
+Online Python Tutor
+https://github.com/pgbovine/OnlinePythonTutor/
+
+Copyright (C) 2010-2013 Philip J. Guo (philip@pgbovine.net)
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ -->
+
+
+<head>
+    <title>Online Java Visualizer</title><!-- requirements for pytutor.js -->
+
+    <script src="./OnlinePythonTutor/v3/js/d3.v2.min.js" type="text/javascript">
+    </script>
+    <script src="./OnlinePythonTutor/v3/js/jquery-1.8.2.min.js" type="text/javascript">
+    </script>
+    <script src="./OnlinePythonTutor/v3/js/jquery.ba-bbq.min.js" type="text/javascript">
+    </script><!-- for handling back button and URL hashes -->
+
+    <script src="./OnlinePythonTutor/v3/js/jquery.jsPlumb-1.3.10-all-min.js" type="text/javascript">
+    </script><!-- for rendering SVG connectors
+              DO NOT UPGRADE ABOVE 1.3.10 OR ELSE BREAKAGE WILL OCCUR -->
+
+    <script src="./OnlinePythonTutor/v3/js/jquery-ui-1.8.24.custom.min.js" type="text/javascript">
+    </script><!-- for sliders and other UI elements -->
+    <link href="./OnlinePythonTutor/v3/css/ui-lightness/jquery-ui-1.8.24.custom.css" rel="stylesheet" type="text/css"><!-- for annotation bubbles -->
+
+    <script src="./OnlinePythonTutor/v3/js/jquery.qtip.min.js" type="text/javascript">
+    </script>
+    <link href="./OnlinePythonTutor/v3/css/jquery.qtip.css" rel="stylesheet" type="text/css">
+    <script src="./OnlinePythonTutor/v3/js/pytutor.js" type="text/javascript">
+    </script>
+    <script src="./OnlinePythonTutor/v3/js/hooks.js" type="text/javascript">
+    </script>
+    <script src="pytutor-customizations.js?2" type="text/javascript">
+    </script>
+    <link href="./OnlinePythonTutor/v3/css/pytutor.css" rel="stylesheet">
+    <link href="pytutor-customizations.css" rel="stylesheet">
+    <link href="./CodeMirror/theme/monokai.css" rel="stylesheet"><!-- requirements for opt-frontend.js -->
+    <!-- codemirror.net online code editor -->
+
+    <script src="./CodeMirror/lib/codemirror.js" type="text/javascript">
+    </script>
+    <link href="./CodeMirror/lib/codemirror.css" rel="stylesheet" type="text/css">
+    <script src="./CodeMirror/addon/search/searchcursor.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/search/search.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/dialog/dialog.js" type="text/javascript">
+    </script><!-- <script type="text/javascript" src="./CodeMirror/addon/edit/matchbrackets.js"></script> -->
+
+    <script src="./CodeMirror/addon/edit/closebrackets.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/comment/comment.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/wrap/hardwrap.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/fold/foldcode.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/fold/brace-fold.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/mode/javascript/javascript.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/mode/clike/clike.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/addon/edit/matchbrackets.js" type="text/javascript">
+    </script>
+    <script src="./CodeMirror/keymap/sublime.js" type="text/javascript">
+    </script>
+    <script src="./base64.js" type="text/javascript">
+    </script>
+    <script src="./config.js.php" type="text/javascript">
+    </script><!-- used to be opt-frontend.js -->
+
+    <script src="./jv-frontend.js?8" type="text/javascript">
+    </script><!-- used to be opt-frontend.js -->
+
+    <script type="text/javascript">
+    function saveTextAsFile() {
+        var textToWrite = pyInputCodeMirror.getValue();
+        var textFileAsBlob = new Blob([textToWrite], {
+            type: 'text/plain'
+        });
+        var fileNameToSaveAs = document.getElementById("filenamefield").value;
+        if(!fileNameToSaveAs){
+          fileNameToSaveAs = "code";
+        }
+        fileNameToSaveAs += ".java";
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "My Hidden Link";
+        window.URL = window.URL || window.webkitURL;
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+
+    function saveTextasJNLP() {
+        var code = pyInputCodeMirror.getValue();
+        console.log(code);
+        $.ajax({
+            url: "upload.php",
+            type: "post",
+            data: "codeToUpload=" + code,
+            success: function(res) {
+                var codebase = 'http://' + window.location.hostname + window.location.pathname;
+                var filebase = codebase + "upload/" + res + "?forcedownload=1";
+                var textToWrite = '<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n\n<jnlp spec="1.0+" codebase="' + codebase + '" href="">\n<information>\n<title>Jeliot 3<\/title>\n<vendor>University of Joensuu<\/vendor>\n<description>Jeliot 3, the program animation tool<\/description>\n<offline-allowed/>\n<\/information>\n<security>\n<all-permissions/>\n<\/security>\n<resources>\n<j2se version="1.4+"/>\n<jar href="jeliot.jar"/>\n<\/resources>\n<application-desc main-class="jeliot.MoodleJeliot">\n\n<argument>' + filebase + '<\/argument>\n<argument>sessionID<\/argument>\n<argument>userID<\/argument>\n<argument>0<\/argument>\n\n<\/application-desc>\n<\/jnlp>'
+                var textFileAsBlob = new Blob([textToWrite], {
+                    type: 'text/plain'
+                });
+                var fileNameToSaveAs = "WebStartJeliot.jnlp";
+                var downloadLink = document.createElement("a");
+                downloadLink.download = fileNameToSaveAs;
+                downloadLink.innerHTML = "My Hidden Link";
+                window.URL = window.URL || window.webkitURL;
+                downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+                downloadLink.onclick = destroyClickedElement;
+                downloadLink.style.display = "none";
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+            }
+        });
+    }
+
+    function destroyClickedElement(event) {
+        // remove the link from the DOM
+        document.body.removeChild(event.target);
+    }
+    </script>
+    <link href="./OnlinePythonTutor/v3/css/opt-frontend.css" rel="stylesheet">
+</head>
+
+<body>
+    <table style="margin:0px auto 0px auto;">
+        <tr>
+            <td style="text-align: center">
+                <center><a href="#" style="text-decoration:none;"><span style="font-size:200%">Coding Arena</span></a></center>
+            </td>
+        </tr>
+    </table>
+
+
+    <div id="pyInputPane">
+        <p style="text-align:center;">Write your Java code here:</p>
+
+
+        <div id="codeInputPane">
+        </div>
+        <!-- populate with a CodeMirror instance -->
+
+
+        <table>
+            <tr>
+                <td><button onclick="$('#options').toggle()">options</button>
+                </td>
+
+                <td><span id='options' style='display:none'><span style="white-space: nowrap;"><input id='showStringsAsObjects' type='checkbox'> <label for='showStringsAsObjects'>Show String/Integer/etc objects, not just values</label></span> <label for='showStringsAsObjects'><span style="white-space: nowrap;"><input id='showAllFields' type='checkbox'> <label for='showAllFields'>Show overridden fields, synthetics</label> <span style="white-space: nowrap;"><input id='disableNesting' type='checkbox'> <label for='disableNesting'>Prefer non-nesting and vertical layouts</label> <span style="white-space: nowrap;"><input id='verticalLists' type='checkbox'> <label for='verticalLists'>Force linked lists to display vertically</label></span> <!-- #options --></span></span></label></span>
+                </td>
+            </tr>
+        </table>
+
+
+        <div id='args'>
+            <code>args</code>: <span id='argslist'></span> <button id='addarg' onclick='javascript:addArg("")'>+command-line argument</button>
+        </div>
+
+
+        <div id='stdin'>
+            <button id='stdin-button' onclick='$("#stdin-xdiv").toggle()'>Standard Input</button> (also visualizes consumption of <a href="http://introcs.cs.princeton.edu/java/stdlib/"><code>StdIn</code></a>)
+
+            <div id='stdin-xdiv' style='display:none;position:relative'>
+                <textarea id='stdinarea' style='-webkit-box-sizing: border-box;width:100%;height:100px;font-family:monospace'></textarea> <sup class='closestdin' onclick='$("#stdin-xdiv").toggle()' style='position:absolute;top:5px;right:5px'>x</sup>
+            </div>
+        </div>
+        <style>
+          button {
+              font-family: verdana,arial,helvetica,sans-serif;
+          }
+
+          .arg,#stdin-xdiv {
+              margin-right: 1px;
+              padding: 5px 3px;
+              border: 1px solid #DDD;
+              background-color: #EEE;
+              border-radius: 5px;
+              -webkit-border-radius: 5px;
+          }
+
+          .arg input {
+              width: 50px;
+          }
+
+          .closex {
+              font-weight: 700;
+              position: relative;
+              top: -4px;
+              left: 2px;
+              text-decoration: none;
+              color: red;
+              cursor: pointer;
+          }
+
+          .closestdin {
+              font-weight: 700;
+              text-decoration: none;
+              color: red;
+              cursor: pointer;
+          }
+
+          .toggler {
+              text-align: center;
+          }
+        </style>
+        <script type='text/javascript'>
+          addArg = function(init) {
+              $('#argslist')
+                  .append('<span class="arg"><input type="text"><\/input><sup class="closex">x<\/sup><\/span>');
+              $('#argslist .arg:last-child input')
+                  .val(init);
+          };
+          $('#args')
+              .on('click', '.closex', function(event) {
+                  $(this)
+                      .parents('span.arg')
+                      .remove();
+              });
+          $(function() {
+              $('.toggler a')
+                  .on('click', function(event) {
+                      $('#faq')
+                          .toggle();
+                      return false;
+                  });
+          });
+          topics = [
+              ["basic", ["(Default)", "Variables", "CmdLineArgs", "StdIn", "ControlFlow", "Sqrt", "ExecLimit", "Strings"]],
+              ["method", ["PassByValue", "Recursion", "StackOverflow"]],
+              ["oop", ["Rolex", "Person", "Complex", "Casting"]],
+              ["data structure", ["LinkedList", "StackQueue", "Postfix", "SymbolTable"]],
+              ["java feature", ["ToString", "Reflect", "Exception", "ExceptionFlow", "TwoClasses"]]
+          ];
+        </script>
+        <style>
+          @import  "https://fonts.googleapis.com/css?family=Slabo+27px";
+
+          body,html {
+              background: #242D32;
+              color: #CCEBFF;
+              margin: 0;
+              padding: 0;
+              padding-bottom: 50px;
+              font-family: 'Slabo 27px',serif;
+              line-height: 1.1rem;
+              letter-spacing: .5px;
+              position: relative;
+          }
+
+          #stackHeapTable {
+              color: teal;
+          }
+
+          #stackHeader,#heapHeader {
+              color: #CCEBFF !important;
+          }
+
+          div.ExecutionVisualizer .highlight-cur {
+              background-color: #2F709A;
+          }
+
+          div.ExecutionVisualizer .highlight-prev {
+              background-color: #F44336;
+              color: #fff;
+              font-weight: 700;
+          }
+
+          div.ExecutionVisualizer .highlight-legend {
+              color: #fff;
+          }
+
+          .CodeMirror .errorLine {
+              background-color: #D23434 !important;
+              outline: 1px dashed red !important;
+          }
+
+          body > table {
+              background: #152B39;
+              width: 100%;
+              border-style: solid;
+              border-width: 1px;
+              border-color: #1a2125;
+          }
+
+          body > table tr > td {
+              padding: 10px;
+              text-align: left !important;
+          }
+
+          body > table tr > td:first-child {
+              width: 64px;
+          }
+
+          a {
+              font-weight: 700;
+              color: #fff !important;
+          }
+
+          tt,code,code a {
+              color: #CCEBFF !important;
+              font-family: 'Slabo 27px',serif;
+              display: inline-block;
+              transition: all .3s;
+          }
+
+          tt,code {
+              border: 2px solid;
+              padding: 0 3px;
+              font-weight: 700;
+          }
+
+          tt:hover,code:hover,code:hover a {
+              background: #FFD900;
+              color: #152B39 !important;
+          }
+
+          button {
+              border-radius: 2px;
+              border: none;
+              background: #FFD900;
+              font-family: 'Slabo 27px',serif;
+              cursor: pointer;
+          }
+
+          #pyInputPane p:first-child {
+              font-size: 1.1rem;
+          }
+
+          #pyInputPane table tbody tr td {
+              padding-left: 0;
+          }
+
+          #pyInputPane table tbody tr td button {
+              position: relative;
+              left: -2px;
+              height: 100%;
+              min-height: 20px;
+              text-transform: uppercase;
+          }
+
+          #options {
+              display: inline-block;
+          }
+
+          #options span {
+              display: block;
+          }
+
+          #options span label {
+              vertical-align: top;
+          }
+
+          #options span input:checked + label {
+              font-weight: 700;
+          }
+
+          #footer {
+              background: #152B39;
+              width: 100%;
+              max-width: 100%;
+              margin: 0;
+              position: fixed;
+              bottom: 0;
+              z-index: 999;
+          }
+
+          #footer p {
+              margin: auto;
+              max-width: 700px;
+              padding-bottom: 20px;
+              color: #CCEBFF;
+          }
+
+          #footer p:last-child a {
+              color: #FFEF1F !important;
+          }
+        </style>
+        <p style="text-align:center">Filename: <input type="text" id="filenamefield"></input>.java</p>
+        <p style="text-align:center"><button class="bigBtn" id="saveBtn" onclick="saveTextAsFile()" type="button">Save Code</button> <!-- </p>
+
+<p style="text-align:center"> -->
+         <button class="bigBtn" id="executeBtn" type="button">Visualize Execution</button> <button class="bigBtn" id="jeliotBtn" onclick="saveTextasJNLP()" type="button">Start in Jeliot</button></p>
+        <!-- <p style="margin-top: 25px;" id="examplesHolder"> -->
+
+        <div id='faq' style='display:none'>
+            <ul>
+                <li><i>How can I access Java's built-in <tt>Stack</tt>/<tt>Queue</tt> instead of the introcs one?</i> At the top of your program, write <tt>import java.util.Stack;</tt> &mdash; note, <tt>import java.util.*;</tt> won't work.</li>
+
+
+                <li>
+                    <i>How do I get shorter URLs?</i> For example code, you can use <a href="#sampleFile=ExecLimit" target="_blank"><tt>#sampleFile=ExecLimit</tt></a> but in general, this is a feature that still <a href="TODO">needs to be implemented</a>. You could use <a href="http://goo.gl">goo.gl</a> for now.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div id="pyOutputPane">
+    </div>
+
+
+    <div id="footer">
+        <p style="margin-top: 8px;">Based on <a href="http://www.pythontutor.com">Online Python Tutor</a>, &copy; 2010-2013 <a href="http://www.pgbovine.net/">Philip Guo</a> all rights reserved. Java version by <a href="mailto:daveagp@gmail.com">David Pritchard</a>, <a href="https://github.com/wgwozdz">Will Gwozdz</a>. Source code: for this version's <a href="https://github.com/daveagp/java_jail/tree/master/cp/traceprinter">backend</a>; the <a href="https://github.com/daveagp/java_visualize">frontend and installation instructions</a>.</p>
+    </div>
+</body>
+</html>
