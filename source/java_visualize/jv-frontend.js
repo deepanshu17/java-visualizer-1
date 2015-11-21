@@ -122,6 +122,120 @@ function getUserStdin() {
     return window.stdinarea.value;
 }
 
+function saveTextAsFile() {
+    var textToWrite = pyInputCodeMirror.getValue();
+    var textFileAsBlob = new Blob([textToWrite], {
+        type: 'text/plain'
+    });
+    var fileNameToSaveAs = document.getElementById("filenamefield").value;
+    if(!fileNameToSaveAs){
+      fileNameToSaveAs = "code";
+    }
+    fileNameToSaveAs += ".java";
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "My Hidden Link";
+    window.URL = window.URL || window.webkitURL;
+    downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+}
+
+function saveTextasJNLP() {
+    var code = encodeURIComponent(pyInputCodeMirror.getValue());
+    $.ajax({
+        url: "upload.php",
+        type: "post",
+        data: "codeToUpload=" + code,
+        success: function(res) {
+            var codebase = 'http://' + window.location.hostname + window.location.pathname;
+            var filebase = codebase + "upload/" + res + "?forcedownload=1";
+            var textToWrite = '<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n\n<jnlp spec="1.0+" codebase="' + codebase + '" href="">\n<information>\n<title>Jeliot 3<\/title>\n<vendor>University of Joensuu<\/vendor>\n<description>Jeliot 3, the program animation tool<\/description>\n<offline-allowed/>\n<\/information>\n<security>\n<all-permissions/>\n<\/security>\n<resources>\n<j2se version="1.4+"/>\n<jar href="jeliot.jar"/>\n<\/resources>\n<application-desc main-class="jeliot.MoodleJeliot">\n\n<argument>' + filebase + '<\/argument>\n<argument>sessionID<\/argument>\n<argument>userID<\/argument>\n<argument>0<\/argument>\n\n<\/application-desc>\n<\/jnlp>'
+            var textFileAsBlob = new Blob([textToWrite], {
+                type: 'text/plain'
+            });
+            var fileNameToSaveAs = "WebStartJeliot.jnlp";
+            var downloadLink = document.createElement("a");
+            downloadLink.download = fileNameToSaveAs;
+            downloadLink.innerHTML = "My Hidden Link";
+            window.URL = window.URL || window.webkitURL;
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+            downloadLink.onclick = destroyClickedElement;
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        }
+    });
+}
+
+function destroyClickedElement(event) {
+    // remove the link from the DOM
+    document.body.removeChild(event.target);
+}
+
+function ChangeTheme(themename) {
+    if(document.getElementById("theme").value != "5"){
+      document.body.style.background = '#F8F8F8';
+      document.body.style.color = 'black';
+      pyInputCodeMirror.setOption("theme", 'eclipse');
+      document.getElementById("heading").style.backgroundColor = '#405D9B';
+      $('#editBtn').attr('style', 'color: black !important');
+      $('.bigBtn').css('background','#415D9B');
+      $('.bigBtn').css('color','white');
+      $('#optionsBtn').attr('style', 'background: #4DB6AC !important');
+      $('#addarg').attr('style', 'background: #4DB6AC !important');
+      $('#stdin-button').attr('style', 'background: #4DB6AC !important');
+      $('#args').attr('style', 'color: black !important');
+      $('#footer').attr('style', 'background: #405D9B');
+      $('#stackHeader').attr('style', 'color: black !important');
+      $('#heapHeader').attr('style', 'color: black !important');
+      $('#editBtn').attr('style', 'color: black !important');
+    }
+    else{
+      document.body.style.background = '#242D32';
+      document.body.style.color = '#CCEBFF';
+      pyInputCodeMirror.setOption("theme", 'monokai');
+      document.getElementById("heading").style.backgroundColor = '#152B39';
+
+      $('.bigBtn').css('background','#FFD900');
+      $('.bigBtn').css('color','black');
+      $('#optionsBtn').attr('style', 'background: #FFD900 !important');
+      $('#addarg').attr('style', 'background: #FFD900 !important');
+      $('#stdin-button').attr('style', 'background: #FFD900 !important');
+      $('#args').attr('style', 'color: #CCEBFF !important');
+      $('#footer').attr('style', 'background: #152B39');
+      $('#stackHeader').attr('style', 'color: #CCEBFF !important');
+      $('#heapHeader').attr('style', 'color: #CCEBFF !important');
+      $('#editBtn').attr('style', 'color: #fff !important');
+    }
+
+    var today = new Date();
+    var expire = new Date();
+    expire.setTime(today.getTime() + 3600000*24*365);
+    document.cookie = "theme="+escape(themename) + ";expires="+expire.toGMTString();
+
+}
+
+function readCookie(name) {
+  var nameEQ = name + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var themeSelect = document.getElementById('theme');
+  var selectedTheme = readCookie('theme');
+  themeSelect.value = selectedTheme;
+  ChangeTheme(selectedTheme);
+});    
+
+
 $(document).ready(function() {
 
   //$("#embedLinkDiv").hide();
@@ -332,7 +446,8 @@ $(document).ready(function() {
                 $(document).scrollTop(0);
 
                 $.bbq.pushState({ mode: 'display' }, 2 /* completely override other hash strings to keep URL clean */);
-
+                ChangeTheme(readCookie('theme'));
+                $('.ui-resizable-handle').attr('style', 'z-index: 400');
               }
             }});
   }
