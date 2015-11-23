@@ -1,0 +1,26 @@
+This is the report of the series of tests carried out to check the codes of enhance edu oops course 1 and 2, whether they are working on 
+online java visualizer or not
+OOPS Java course 1 and 2
+
+sr no.    code name        running/not running    reason			After correction
+
+1 	  reading input	   not running		  class should be public	Running (taking input at stdin before execution begins)
+2         switch case      not running            class should be public	Running
+3         loops            not running            class should be public	Running
+4         oops level 1     running
+5 	  arrays           running               
+6         interface        not running            class should be public	Running
+7         using functions  not running            class should be public	Running
+8         file io          not running            error given as TLE		cannot be implemented on web as it's file I/O.
+9         if/else          not running            class should be public	Running
+
+
+data structures phase 2
+
+sr no.    code name        running/not running    reason
+
+1         cpu rr           not running            class node not declared - If declared after correction, running.
+2         stack            running
+3	  linkedlist       running
+
+
