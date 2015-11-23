@@ -1,0 +1,15 @@
+This is a report of codes which were run on online java visualizer and tested.
+
+sr no.	code file name          running/not running 	Inference from testing
+1 	sample1.java 		running 		tested for simple variable declaration and usage of basic operators
+2 	cmdlinearg.java 	running 		tested for command line arguments
+3  	stdin.java 		running 		tested whether it takes input from stdin or not
+4 	control.java 		running 		tested whether if else and other control statements are visualized properly or no
+5 	sqrt.java 		running 		tested whether doubles work properly or not
+6 	string.java 		running 		tested whether strings are visualized properly or not
+7 	passby.java 		running 		tested for functions which are given arguments passing by value
+8 	recursion.java 		running 		tested for recursive functions
+9 	complex.java 		running 		tested whether oops is working and is visualized properly or not
+10 	linkedlist.java 	running 		tested whether data structures are visualized properly or not
+11 	stack.java 		running  		tested whether inbuilt data structures are visualized properly or not
+12 	knapsack.java 		running 		tested whether arrays and other functionality is working or not
